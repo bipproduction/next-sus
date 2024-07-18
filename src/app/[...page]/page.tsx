@@ -7,7 +7,7 @@ export default function Page({ params }: { params: { page: string[] } }) {
     const app = listApp.find((app) => app.id === params.page.join("/"));
 
     function onBack() {
-        window.history.back()
+        window.location.href = "/";
     }
 
     if (!app) return <div>Not found</div>;
@@ -16,7 +16,7 @@ export default function Page({ params }: { params: { page: string[] } }) {
             <Group
                 p={"md"}
                 pos={"absolute"}
-                top={0}
+                bottom={0}
                 left={0}
                 style={{
                     zIndex: 999,
@@ -24,7 +24,6 @@ export default function Page({ params }: { params: { page: string[] } }) {
                 <ActionIcon onClick={onBack} radius={100}>
                     <MdArrowBackIos />
                 </ActionIcon>
-                {/* <Text>{app.name}</Text> */}
             </Group>
             <iframe
                 src={app?.url}
