@@ -9,4 +9,9 @@ export const listApp = [
     name: "sdm",
     url: "https://sdm.ravenstone.cloud",
   },
+  {
+    id: "3",
+    name: "minds",
+    url: "https://youngminds.online/",
+  },
 ];
