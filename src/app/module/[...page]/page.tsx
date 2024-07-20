@@ -1,9 +1,14 @@
 'use client'
-import { listApp } from "@/list/listApp";
 import { ActionIcon, Flex, Group, Stack, Text } from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
 import { MdArrowBackIos } from "react-icons/md";
 
 export default function Page({ params }: { params: { page: string[] } }) {
+    const [listApp, setListApp] = useLocalStorage<Record<string, any>[]>({
+        key: "listApp",
+        defaultValue: [],
+    })
+    
     const app = listApp.find((app) => app.id === params.page.join("/"));
 
     function onBack() {
