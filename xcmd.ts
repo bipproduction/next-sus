@@ -28,6 +28,10 @@ async function push() {
     console.log(data.toString().green);
   });
   chlid.stderr.on("data", (data) => {
-    console.log(data.toString().red);
+    console.log(data.toString().yellow);
+  });
+
+  chlid.on("close", (code) => {
+    console.log(`child process exited with code ${code}`);
   });
 }
