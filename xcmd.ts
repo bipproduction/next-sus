@@ -31,7 +31,7 @@ async function push() {
     console.log(data.toString().yellow);
   });
 
-  chlid.on("close", (code) => {
-    console.log(`child process exited with code ${code}`);
+  chlid.on("error", (code) => {
+    console.log(code);
   });
 }
