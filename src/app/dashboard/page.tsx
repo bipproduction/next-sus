@@ -1,9 +1,9 @@
 'use client'
-import { ActionIcon, Button, Flex, NavLink, Stack, Text, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Anchor, Box, Button, Flex, Group, Loader, LoadingOverlay, NavLink, Skeleton, Stack, Text, TextInput, Title, UnstyledButton } from "@mantine/core";
 import { useLocalStorage, useShallowEffect } from "@mantine/hooks";
 import _ from "lodash";
 import { useState } from "react";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdHome } from "react-icons/md";
 
 const listApp = [
     {
@@ -24,70 +24,102 @@ export default function Page() {
         defaultValue: listApp[0].id,
     });
 
-    return <Stack>
-        <Flex>
-            <Stack gap={0} h={"100vh"} w={300} style={{
-                backgroundColor: "lightgray"
-            }}>
+    return <Stack h={"100vh"} gap={"0"}>
+        <Flex bg={"dark"} c={"white"} p={"md"} gap={"md"}>
+            <ActionIcon variant="subtle" onClick={() => window.location.href = "/"}>
+                <MdHome size={"1.5rem"} />
+            </ActionIcon>
+            <Stack>
+                <Title order={3}>Dashboard</Title>
+                <Flex gap={"lg"} hiddenFrom="md">
+                    {listApp.map((app, index) => (
+                        <Anchor key={index} onClick={() => setCurrentApp(app.id)} >{app.name}</Anchor>
+                    ))}
+                </Flex>
+            </Stack>
+        </Flex>
+        <Flex flex={1}>
+            <Stack visibleFrom="md" gap={0} w={300} bg={"dark"} c={"white"} p={"md"}>
                 {listApp.map((app, index) => (
-                    <NavLink key={index} label={app.name} onClick={() => setCurrentApp(app.id)} />
+                    <Anchor variant="text" key={index} onClick={() => setCurrentApp(app.id)} >{app.name}</Anchor>
                 ))}
             </Stack>
-            <Stack p={"md"} h={"100vh"}>
-                {(() => {
-                    const App = listApp.find((app) => app.id === currentApp)!.view;
-                    return <App />
-                })()}
-            </Stack>
+            <Box pos={"relative"} flex={1} style={{
+                backgroundColor: "lightslategray"
+            }}>
+                <CurrentModule listApp={listApp} currentApp={currentApp} />
+            </Box>
         </Flex>
     </Stack>;
 }
 
+function CurrentModule({ listApp, currentApp }: { listApp: Record<string, any>[], currentApp: string }) {
+    const app = listApp.find((app) => app.id === currentApp);
+    if (!app) return <div>App Not found</div>
+    return <app.view />;
+}
+
 function ListModule() {
     const [listApp, setListApp] = useState<Record<string, any>[]>([])
+    const [loading, setLoading] = useState(false)
+    const [loadingList, setLoadingList] = useState(false)
 
     useShallowEffect(() => {
         loadApp()
     }, [])
     async function loadApp() {
+        setLoadingList(true)
         const res = await fetch("/api/list-app")
 
         if (res.ok) {
             setListApp(await res.json())
         }
+        setLoadingList(false)
     }
 
     async function onDelete(id: string) {
-        if (!confirm) return
-        const res = await fetch("/api/delete-app", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ id }),
-        })
+        if (confirm("Are you sure?")) {
+            setLoading(true)
+            const res = await fetch("/api/delete-app", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
+            })
 
-        if (res.ok) {
-            loadApp()
+            if (res.ok) {
+                alert("Deleted")
+                loadApp()
+
+            }
+
+            setLoading(false)
         }
+
     }
-    return <Stack gap={"sm"}>
-        <Title>List App</Title>
+
+
+    return <Stack gap={"sm"} p={"md"}>
+        <Title order={3}>List App</Title>
         <Stack
+            pos={"relative"}
             p={"md"}
-            gap={"md"}
-            style={{
-                backgroundColor: "lightgray"
-            }}>
+            gap={"md"}>
             {listApp.map((app, index) => (
-                <Flex key={index} gap={"md"} >
-                    <ActionIcon onClick={() => onDelete(app.id)} radius={100}>
-                        <MdDelete />
-                    </ActionIcon>
-                    <Text>{app.name}</Text>
-                </Flex>
+                <Stack key={index} gap={"0"} >
+                    <Text fw={"bold"}>{app.name}</Text>
+                    <Text c={"dark"} >{app.url}</Text>
+                    <Group>
+                        <Anchor c={"white"} onClick={() => onDelete(app.id)}>delete</Anchor>
+                    </Group>
+                </Stack>
             ))}
+            <Loader color="white" style={{
+                display: loadingList ? "block" : "none"
+            }} />
         </Stack>
+        <LoadingOverlay visible={loading} />
     </Stack>
 }
 
@@ -113,9 +145,12 @@ function CreateModule() {
         }
 
     }
-    return <Stack gap={"md"}>
-        <TextInput value={form.name} placeholder="Module name" onChange={(value) => setForm({ ...form, name: value.currentTarget.value })} />
-        <TextInput value={form.url} placeholder="Module url" onChange={(value) => setForm({ ...form, url: value.currentTarget.value })} />
-        <Button onClick={onSave} >Save</Button>
-    </Stack>
+    return <Flex>
+        <Stack gap={"md"} p={"md"}>
+            <Title order={3}>Create App</Title>
+            <TextInput value={form.name} placeholder="Module name" onChange={(value) => setForm({ ...form, name: value.currentTarget.value })} />
+            <TextInput value={form.url} placeholder="Module url" onChange={(value) => setForm({ ...form, url: value.currentTarget.value })} />
+            <Button onClick={onSave} >Save</Button>
+        </Stack>
+    </Flex>
 }
