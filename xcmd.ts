@@ -1,5 +1,6 @@
 import yargs from "yargs";
 import { spawn } from "child_process";
+import "colors";
 
 yargs()
   .command("push", "push command", (yargs) => yargs, push)
@@ -24,9 +25,9 @@ async function push() {
     `git add -A && git commit -m "${currentBranch}" && git push origin ${currentBranch}`,
   ]);
   chlid.stdout.on("data", (data) => {
-    console.log(data.toString());
+    console.log(data.toString().green);
   });
   chlid.stderr.on("data", (data) => {
-    console.log(data.toString());
+    console.log(data.toString().red);
   });
 }
