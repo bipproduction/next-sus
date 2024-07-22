@@ -26,9 +26,12 @@ export default function Page({ params }: { params: { page: string[] } }) {
                 style={{
                     zIndex: 999,
                 }}>
-                <ActionIcon onClick={onBack} radius={100}>
-                    <MdArrowBackIos />
-                </ActionIcon>
+                <Group gap={"md"}>
+                    <ActionIcon onClick={onBack} radius={100}>
+                        <MdArrowBackIos />
+                    </ActionIcon>
+                    <Text>v1.0.1</Text>
+                </Group>
             </Group>
             <iframe
                 src={app?.url}
