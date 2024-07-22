@@ -8,7 +8,7 @@ export default function Page({ params }: { params: { page: string[] } }) {
         key: "listApp",
         defaultValue: [],
     })
-    
+
     const app = listApp.find((app) => app.id === params.page.join("/"));
 
     function onBack() {
@@ -17,7 +17,7 @@ export default function Page({ params }: { params: { page: string[] } }) {
 
     if (!app) return <div>Not found</div>;
     return (
-        <Stack gap={"md"} align="center">
+        <Stack gap={"md"} align="center" pos={"fixed"} w={"100%"} h={"100%"}>
             <Group
                 p={"md"}
                 pos={"absolute"}
